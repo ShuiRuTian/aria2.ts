@@ -1,0 +1,11 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compilerOptions": {
+        "composite": true,
+        "module": "commonjs",  // ts-node only support commonjs module.
+        "target": "ES5",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "noUnusedLocals": true
+    }
+}

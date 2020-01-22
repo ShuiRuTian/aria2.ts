@@ -1,0 +1,44 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        // follow the recommandation https://github.com/typescript-eslint/typescript-eslint/issues/890.
+        // However, if it supports project refference, this should be modified immediately.
+        // this one could be use, but is too slow -- "./**/tsconfig.json"
+        "project":  "./tsconfig.eslint.json" 
+    },
+    "plugins": [
+        "promise",
+        "import",
+        "jsx-a11y",
+        "@typescript-eslint"
+    ],
+    "extends": [
+        "airbnb-base",
+        "eslint:recommended",
+        "plugin:import/typescript",
+        "plugin:promise/recommended",
+        "plugin:jsx-a11y/recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
+    "rules": {
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": true
+            }
+        ],
+        "import/extensions":0,
+        "no-console": "off",
+        "max-len":"off"
+    }
+}
