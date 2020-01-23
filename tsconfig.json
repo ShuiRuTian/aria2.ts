@@ -3,7 +3,7 @@
     "compilerOptions": {
         "outDir": "./dist/",
         // "allowSyntheticDefaultImports":true
-        // "esModuleInterop":true,
+        "esModuleInterop":true,
         // "noUnusedLocals": true
     },
     "exclude": ["./webpack"]
