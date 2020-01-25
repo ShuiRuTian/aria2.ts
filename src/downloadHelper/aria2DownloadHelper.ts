@@ -34,6 +34,7 @@ function getDownloadLink(platform: SupportPlatform): string {
     case 'linux':
       return 'https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip';
     case 'win32':
+      return 'https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-win-64bit-build1.zip';
     default:
       throw new Error();
   }
