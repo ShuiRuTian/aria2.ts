@@ -1,14 +1,7 @@
 {
     "extends": "./tsconfig.base.json",
     "compilerOptions": {
-        "outDir": "./dist/",
-        // "allowSyntheticDefaultImports":true
-        "esModuleInterop":true,
-        // "noUnusedLocals": true
-    },
-    "exclude": ["./webpack"]
-    // "references": [
-    //     {
-    //     }
-    // ]
+        "outDir": "dist/cjs",
+        "module": "commonjs",
+    }
 }
