@@ -2,7 +2,7 @@
     "compilerOptions": {
       "sourceMap": true,
       "moduleResolution": "Node",
-      "target": "ESNext",
+      "target": "ES2018",
       "experimentalDecorators": true,
       // "noImplicitAny": true,
       // "noImplicitReturns": true,

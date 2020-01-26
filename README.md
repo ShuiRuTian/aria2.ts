@@ -8,3 +8,4 @@ helper to use aria2 in js
 
 ## thanks
 Inspired by aria2.js
+use download code from @electron/get
