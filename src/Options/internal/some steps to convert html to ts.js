@@ -1,8 +1,8 @@
 //https://aria2.github.io/manual/en/html/aria2c.html
 
-var OptionTrees = document.querySelectorAll("#options .section");
-var classArray = [];
-OptionTrees.forEach((OptionTree)=>{
+var FunctionTrees = document.querySelectorAll("#options .section");
+var methodArray = [];
+FunctionTrees.forEach((OptionTree)=>{
     let classInformation = [];
     let className = OptionTree.id;
     className = `export interface ${className} {`;
@@ -24,10 +24,10 @@ OptionTrees.forEach((OptionTree)=>{
         classInformation.push(optionProp+'?: '+optionValue+';');
     });
     classInformation.push("\}");
-    classArray.push(classInformation.join("\n"));
+    methodArray.push(classInformation.join("\n"));
 })
 
-var FinalString = classArray.join('\n');
+var FinalString = methodArray.join('\n');
 FinalString = FinalString.replace(/(interface.*)-(.*\{)/g, "$1_$2")
 FinalString = FinalString.replace(/(interface.*)-(.*\{)/g, "$1_$2")
 FinalString = FinalString.replace(/(interface.*)-(.*\{)/g, "$1_$2")
