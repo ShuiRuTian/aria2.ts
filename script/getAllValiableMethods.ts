@@ -1,4 +1,4 @@
-import JsonRpcClient from "../src/JsonRpcClient";
+import JsonRpcClient from "../src/RpcClient/JsonRpcClient";
 
 var tmpClient = new JsonRpcClient();
 tmpClient.send({
@@ -12,7 +12,7 @@ tmpClient.send({
     const tmp = await res.json();
     const methodsArray: string[] = tmp.result;
     const resultArray: string[] = [];
-    const methodsFunctionArray:  Array<string|undefined> = [];
+    const methodsFunctionArray: Array<string | undefined> = [];
     methodsArray.forEach((s) => {
         methodsFunctionArray.push(s.split('.').pop());
         resultArray.push(s.split('.').pop() + "(){");
