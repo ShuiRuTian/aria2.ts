@@ -13,7 +13,7 @@ import { URL } from 'url';
  */
 
 
-export interface clientSendProperty {
+export interface ClientSendProperty {
     url: URL;
     requestInit: RequestInit;
     /**
@@ -27,11 +27,11 @@ export interface clientSendProperty {
 export type clientBody = { [key: string]: string } | string
 
 export class BaseClient {
-    constructor(url: URL | string, requestInit: RequestInit = {}, body: clientBody = {}) {
-        if (typeof url === 'string') { this.defaultUrl = new URL(url); } else { this.defaultUrl = url; }
-        this.defaultRequestInit = requestInit;
-        this.defaultBody = body;
-    }
+  constructor(url: URL | string, requestInit: RequestInit = {}, body: clientBody = {}) {
+    if (typeof url === 'string') { this.defaultUrl = new URL(url); } else { this.defaultUrl = url; }
+    this.defaultRequestInit = requestInit;
+    this.defaultBody = body;
+  }
 
     defaultUrl: URL;
 
@@ -39,23 +39,27 @@ export class BaseClient {
 
     defaultBody: clientBody;
 
-    protected _send(clientProperty?: Partial<clientSendProperty>) {
-        const url = clientProperty?.url ? clientProperty?.url : this.defaultUrl;
-        let requestInit = clientProperty?.requestInit ? clientProperty?.requestInit : {};
-        const mergeMode = clientProperty?.mergeMode ? clientProperty?.mergeMode : 'mergeShadow';
-        switch (mergeMode) {
-            case 'mergeShadow':
-                const oriBodyFromRequestInit: { [key: string]: string } = this.defaultRequestInit.body === undefined ? {} : JSON.parse(this.defaultRequestInit.body?.toString());
-                const oriBodyFromDefaultBody: { [key: string]: string } = typeof this.defaultBody === 'string' ? JSON.parse(this.defaultBody) : this.defaultBody;
-                const oriBody: { [key: string]: string } = { ...oriBodyFromRequestInit, ...oriBodyFromDefaultBody };
-                const newBody: { [key: string]: string } = requestInit?.body === undefined ? {} : JSON.parse(requestInit.body?.toString());
-                requestInit = { ...this.defaultRequestInit, ...requestInit, body: JSON.stringify({ ...oriBody, ...newBody }) };
-                break;
-            case 'override':
-                break;
-            case 'mergeDeep':
-                throw new Error('not impl');
+    protected send(clientProperty?: Partial<ClientSendProperty>) {
+      const url = clientProperty?.url ? clientProperty?.url : this.defaultUrl;
+      let requestInit = clientProperty?.requestInit ? clientProperty?.requestInit : {};
+      const mergeMode = clientProperty?.mergeMode ? clientProperty?.mergeMode : 'mergeShadow';
+      switch (mergeMode) {
+        case 'mergeShadow':
+        {
+          const oriBodyFromRequestInit: { [key: string]: string } = this.defaultRequestInit.body === undefined ? {} : JSON.parse(this.defaultRequestInit.body?.toString());
+          const oriBodyFromDefaultBody: { [key: string]: string } = typeof this.defaultBody === 'string' ? JSON.parse(this.defaultBody) : this.defaultBody;
+          const oriBody: { [key: string]: string } = { ...oriBodyFromRequestInit, ...oriBodyFromDefaultBody };
+          const newBody: { [key: string]: string } = requestInit?.body === undefined ? {} : JSON.parse(requestInit.body?.toString());
+          requestInit = { ...this.defaultRequestInit, ...requestInit, body: JSON.stringify({ ...oriBody, ...newBody }) };
+          break;
         }
-        return fetch(url, requestInit);
+        case 'override':
+          break;
+        case 'mergeDeep':
+          throw new Error('not impl');
+        default:
+          throw new Error('undefined type');
+      }
+      return fetch(url, requestInit);
     }
 }
