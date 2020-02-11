@@ -9,7 +9,8 @@
     "fs-extra": "^8.1.0",
     "got": "^10.2.2",
     "node-fetch": "^2.6.0",
-    "shelljs": "^0.8.3"
+    "shelljs": "^0.8.3",
+    "ws": "^7.2.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.7",
@@ -18,6 +19,7 @@
     "@types/node": "^13.1.1",
     "@types/node-fetch": "^2.5.4",
     "@types/shelljs": "^0.8.6",
+    "@types/ws": "^7.2.1",
     "@typescript-eslint/eslint-plugin": "^2.13.0",
     "@typescript-eslint/parser": "^2.13.0",
     "chai": "^4.2.0",

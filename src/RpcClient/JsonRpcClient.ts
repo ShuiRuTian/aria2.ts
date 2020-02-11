@@ -10,7 +10,7 @@ import { DownloadStatus } from './DownloadStatus';
 
 const JsonRpcDefaultUrl = 'http://localhost:6800/jsonrpc';
 
-const JsonRpcDefaultRequestInit: RequestInit = {
+const JsonRpcDefaultHttpRequestInit: RequestInit = {
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -34,7 +34,6 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
 
     id() {
       this.Index += 1;
-      // eslint-disable-next-line no-plusplus
       return this.Index;
     }
 
@@ -45,17 +44,18 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
         params,
       };
       const requestInfo: Partial<ClientSendProperty> = {
-        requestInit: {
+        body: {
           body: JSON.stringify(mutableBodyObject),
         },
       };
       return this.send(requestInfo);
     }
 
-    constructor(url: URL | string = JsonRpcDefaultUrl, requestInit: RequestInit = JsonRpcDefaultRequestInit, body: clientBody = JsonRpcDefaultBody) {
+    constructor(url: URL | string = JsonRpcDefaultUrl, requestInit: RequestInit = JsonRpcDefaultHttpRequestInit, body: clientBody = JsonRpcDefaultBody) {
       super(url, requestInit, body);
     }
 
+    // #methods
     /**
     * This method adds a new download. uris is an array of HTTP/FTP/SFTP/BitTorrent URIs (strings) pointing to the same resource.  If you mix URIs pointing to different resources, then the download may fail or be corrupted without aria2 complaining.  When adding BitTorrent Magnet URIs, uris must have only one element and it should be BitTorrent Magnet URI.  options is a struct and its members are pairs of option name and value.  See Options below for more details.  If position is given, it must be an integer starting from 0. The new download will be inserted at position in the waiting queue. If position is omitted or position is larger than the current size of the queue, the new download is appended to the end of the queue.  This method returns the GID of the newly registered download.
     */
@@ -307,4 +307,5 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
     listNotifications() {
       return this.methodSend('system.listNotifications', Array.from(arguments));
     }
+  // #end methods
 }

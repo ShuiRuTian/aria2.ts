@@ -1,13 +1,40 @@
 import JsonRpcClient from './RpcClient/JsonRpcClient';
-
+WebSocket
 const tmpClient = new JsonRpcClient();
+const gidArray = [];
+// const q = new WebSocket('');
+// (async () => {
+//   let res = await tmpClient.addUri([
+//     'https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' }, 2);
+//   let tmp = await res.json();
+//   gidArray.push(tmp.result);
+//   console.log(tmp);
+//   res = await tmpClient.pause(tmp.result);
+//   tmp = await res.json();
+//   console.log(tmp);
+//   res = await tmpClient.pause(tmp.result);
+//   tmp = await res.json();
+//   console.log(tmp);
+// })();
 
-tmpClient.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' }, 2).then(async (res) => {
-  const tmp = await res.json();
+(async () => {
+  let res;
+  let tmp;
+  res = await tmpClient.tellStopped(0, 2);
+  tmp = await res.json();
   console.log(tmp);
-}).catch((err) => {
-  console.log(err);
-});
+  res = await tmpClient.tellWaiting(0, 2);
+  tmp = await res.json();
+  console.log(tmp);
+})();
+
+
+/**
+ * json.error
+ * {
+ *   code: number, message:string,
+ * }
+ */
 
 // tmpClient.listMethods().then(async (res) => {
 //     const tmp = await res.json();
