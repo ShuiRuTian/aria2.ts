@@ -25,9 +25,9 @@ describe('JSON-RPC', () => {
 
   describe('websocket', () => {
     describe('lowLevel websocket', () => {
-      const socket = new WS('http://localhost:6800/jsonrpc');
+      const socket = new WS('ws://localhost:6800/jsonrpc');
       const body = {
-        jsonrpc: '2.0', id: 'qwer', method: 'aria2.getVersion',
+        jsonrpc: '2.0', id: 'qwer', method: 'aria2.addUri', params: [['ithub.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' }],
       };
       socket.addEventListener('open', ({ target }) => {
         console.log('open');
@@ -65,8 +65,8 @@ describe('JSON-RPC', () => {
         });
         setTimeout(() => {
           console.log('timeout2');
-        }, 10000);
-      }, 10000);
+        }, 1000);
+      }, 1000);
     });
   });
 });

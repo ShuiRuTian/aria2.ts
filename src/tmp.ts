@@ -1,5 +1,8 @@
 import JsonRpcClient from './RpcClient/JsonRpcClient';
-WebSocket
+import { resolve } from 'dns';
+import { rejects } from 'assert';
+
+WebSocket;
 const tmpClient = new JsonRpcClient();
 const gidArray = [];
 // const q = new WebSocket('');
@@ -16,6 +19,47 @@ const gidArray = [];
 //   tmp = await res.json();
 //   console.log(tmp);
 // })();
+
+a = sendMessage.recogniseResponseId()
+b = receivedMessage.getId()
+c = receivedMessage.success()
+d = receiveMessage.fail()
+
+if(defferedTask[b]) == undefined throw new Error("this task not existed.")
+if(receivedMessage.success())
+defferedTask[b].resolve(c)
+else if(receiveMessage.fail())
+defferedTask[b].reject("some error")
+else defferedTask[b].reject("strange error")
+
+function send(message, ){
+  let websocket;
+  websocket.send('message');
+  return new Promise((resolve,reject)=>{
+    defferedTask[a]={
+      resolve:()=>{
+        resolve();
+      },
+      reject:()=>{
+        reject();
+      }
+    }
+  });
+}
+
+
+function registRestrict(restrict: () => {}) {
+  let websocket;
+  websocket.addEventListener('message', ({ parameter }) => {
+    if(parameter == condition1){
+      resolve();
+    }
+    else(parameter == condition2){
+      rejects();
+    }
+
+  });
+}
 
 (async () => {
   let res;

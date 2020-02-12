@@ -108,3 +108,45 @@ these script still need to improved.
 ## thanks
 - Inspired by aria2.js
 - use download code from @electron/get
+
+
+## Some tips
+### websocket event to promise
+To hide low level, we wish to use like follows, no matter client is ws or fetch or something else.
+``` ts
+res = await client.method();
+```
+However, websocket use eventlistener, which is necessary for it could not expect request returns in order.
+So, we need a convention to recognise message pair. For aria2 this is a property called 'id', but generally, it may be something like `sendMessage.recogniseResponseId()`, `receivedMessage.getId()`, the returned values should be the same and unique(bijection, so there will only be one pair for one sentMessage and one receivedMessage)
+Then we need two function to judge when to mark Promise as resolved or rejected, like `receivedMessage.success()` and `receiveMessage.fail()` 
+
+Finally we could code:
+``` ts
+const websocket = new WebSocket('url');
+let defferTask={};
+websocket.addEventListener('message',(receivedMessage)=>{
+    b = receivedMessage.getId()
+    if(defferedTask[b]) == undefined throw new Error("this task not existed.")
+    if(receivedMessage.success())
+    defferedTask[b].resolvePromise(receivedMessage);
+    else if(receiveMessage.fail())
+    defferedTask[b].rejectPromise("some error")
+    else defferedTask[b].rejectPromise("strange error")
+})
+
+function send(message){
+  let websocket;
+  websocket.send('message');
+  return new Promise((resolve,reject)=>{
+    a = sendMessage.recogniseResponseId()
+    defferedTask[a]={
+      resolvePromise:(para)=>{
+        resolve(para);
+      },
+      rejectPromise:(para)=>{
+        reject(para);
+      }
+    }
+  });
+}
+```

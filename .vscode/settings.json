@@ -1,6 +1,5 @@
 {
     "mochaExplorer.files": "test/**/*.ts",
     "mochaExplorer.require": "ts-node/register",
-    "mochaExplorer.debuggerPort":9229,
-    "mochaExplorer.nodePath": null
+    "mochaExplorer.logfile": "log"
 }

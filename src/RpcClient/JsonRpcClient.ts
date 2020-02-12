@@ -4,7 +4,9 @@
 
 import { RequestInit } from 'node-fetch';
 import { URL } from 'url';
-import { BaseClient, clientBody, ClientSendProperty } from './BaseClient';
+import {
+  BaseClient, clientBody, ClientSendProperty, WebSocketPromiseResultFunction,
+} from './BaseClient';
 import { AllOption } from '../Options/AllOptions';
 import { DownloadStatus } from './DownloadStatus';
 
@@ -24,10 +26,62 @@ const JsonRpcDefaultBody: clientBody = {
 
 type METHODS = 'aria2.addUri' | 'aria2.addTorrent' | 'aria2.getPeers' | 'aria2.addMetalink' | 'aria2.remove' | 'aria2.pause' | 'aria2.forcePause' | 'aria2.pauseAll' | 'aria2.forcePauseAll' | 'aria2.unpause' | 'aria2.unpauseAll' | 'aria2.forceRemove' | 'aria2.changePosition' | 'aria2.tellStatus' | 'aria2.getUris' | 'aria2.getFiles' | 'aria2.getServers' | 'aria2.tellActive' | 'aria2.tellWaiting' | 'aria2.tellStopped' | 'aria2.getOption' | 'aria2.changeUri' | 'aria2.changeOption' | 'aria2.getGlobalOption' | 'aria2.changeGlobalOption' | 'aria2.purgeDownloadResult' | 'aria2.removeDownloadResult' | 'aria2.getVersion' | 'aria2.getSessionInfo' | 'aria2.shutdown' | 'aria2.forceShutdown' | 'aria2.getGlobalStat' | 'aria2.saveSession' | 'system.multicall' | 'system.listMethods' | 'system.listNotifications'
 type JsonRpcClientMehods = 'addUri' | 'addTorrent' | 'getPeers' | 'addMetalink' | 'remove' | 'pause' | 'forcePause' | 'pauseAll' | 'forcePauseAll' | 'unpause' | 'unpauseAll' | 'forceRemove' | 'changePosition' | 'tellStatus' | 'getUris' | 'getFiles' | 'getServers' | 'tellActive' | 'tellWaiting' | 'tellStopped' | 'getOption' | 'changeUri' | 'changeOption' | 'getGlobalOption' | 'changeGlobalOption' | 'purgeDownloadResult' | 'removeDownloadResult' | 'getVersion' | 'getSessionInfo' | 'shutdown' | 'forceShutdown' | 'getGlobalStat' | 'saveSession' | 'multicall' | 'listMethods' | 'listNotifications';
-
+type Aria2Notifications = 'aria2.onDownloadStart'|'aria2.onDownloadPause'|'aria2.onDownloadStop'|'aria2.onDownloadComplete'|'aria2.onDownloadError'|'aria2.onBtDownloadComplete'
 interface Aria2RpcMethod {
     (...paras: any): Promise<any>;
 }
+
+interface Aria2RpcMethodBase{
+  id: string;
+  jsonrpc: '2.0';
+
+}
+interface Aria2RpcMethodRequest extends Aria2RpcMethodBase{
+  method: string;
+  params: any;
+}
+
+interface Aria2RpcMethodSuccessResponse extends Aria2RpcMethodBase{
+  result: any;
+}
+
+interface Aria2RpcMethodFailedResponse extends Aria2RpcMethodBase{
+  error: {
+    code: number;
+    message: string;
+  };
+}
+
+interface Aria2RpcNotificationResponse{
+  jsonrpc: string;
+  method: Aria2Notifications;
+  params: {gid: string};
+}
+
+
+const aria2WebSocketPromiseFunction: WebSocketPromiseResultFunction = {
+  getIdFromSentMessage(message: string) {
+    const messageObject: Aria2RpcMethodBase = JSON.parse(message);
+    return messageObject.id;
+  },
+  getIdFromReceivedMessage(message: string) {
+    const messageObject: Aria2RpcMethodBase = JSON.parse(message);
+    return messageObject.id;
+  },
+  resolvedCallback(message: string) {
+    const messageObject: Aria2RpcMethodSuccessResponse = JSON.parse(message);
+    return messageObject.result;
+  },
+  rejectCallback(message: string) {
+    const messageObject: Aria2RpcMethodFailedResponse = JSON.parse(message);
+    return messageObject.error;
+  },
+  isPromiseSuccess(message: string) {
+    const messageObject: any = JSON.parse(message);
+    return messageObject.result !== undefined;
+  },
+};
+
 
 export default class JsonRpcClient extends BaseClient implements Record<JsonRpcClientMehods, Aria2RpcMethod> {
     private Index = 0;
@@ -51,8 +105,9 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
       return this.send(requestInfo);
     }
 
+    // to translate the result of websocket to Promise, some things must be known: 1. when to mark result as Resolved and rejected? 2. to resolve 1, the message sent and received must have information to know each other
     constructor(url: URL | string = JsonRpcDefaultUrl, requestInit: RequestInit = JsonRpcDefaultHttpRequestInit, body: clientBody = JsonRpcDefaultBody) {
-      super(url, requestInit, body);
+      super(url, aria2WebSocketPromiseFunction, requestInit, body);
     }
 
     // #methods

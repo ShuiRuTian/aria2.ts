@@ -3,6 +3,7 @@ import { URL } from 'url';
 import fetch, { RequestInit } from 'node-fetch';
 import WebSocket from 'ws';
 import { EventEmitter } from 'events';
+import { watchFile } from 'fs-extra';
 
 /**
  * 1. client have default config, send each config with them
@@ -28,6 +29,12 @@ export interface ClientSendProperty {
 
 export type clientBody = { [key: string]: string } | string
 
+interface WebSocketPromise{
+  resolvePromise: (resolveValue: any) => void;
+  rejectPromise: (rejectReason: any) => void;
+}
+
+
 interface WebSocketEventMap {
   'close': CloseEvent;
   'error': Event;
@@ -35,20 +42,45 @@ interface WebSocketEventMap {
   'open': Event;
 }
 
+export interface WebSocketPromiseResultFunction{
+  getIdFromSentMessage: (message: string) => string;
+  getIdFromReceivedMessage: (message: string) => string;
+  resolvedCallback: (message: string) => any;
+  rejectCallback: (message: string) => any;
+  isPromiseSuccess: (message: string) => boolean;
+}
+
 /**
+ * anti-corruption layer
  * shadow the details of implememnts of websocket and http request.
  *
- * extends EventEmitter, main purpose is to support websocket better.
+ * extends EventEmitter, main purpose is to support websocket better. But not used now.
+ *
+ * transfer websocket from listener to promise.
  */
 
 export class BaseClient extends EventEmitter {
-  constructor(url: URL | string, requestInit: RequestInit = {}, body: clientBody = {}) {
+  constructor(url: URL | string, wsHelper: WebSocketPromiseResultFunction, requestInit: RequestInit = {}, body: clientBody = {}) {
     super();
     if (typeof url === 'string') { this.defaultUrl = new URL(url); } else { this.defaultUrl = url; }
     this.defaultRequestInit = requestInit;
     this.defaultBody = body;
+    this.getCorresponsdMessageId = wsHelper.getIdFromSentMessage;
     if (this.defaultUrl.protocol.startsWith('ws')) {
       this.sokcet = new WebSocket(this.defaultUrl);
+      this.sokcet.addEventListener('message', ({ data: receivedMessage }) => {
+        const messageId = wsHelper.getIdFromSentMessage(receivedMessage);
+        const { websocketPromiseCollection } = this;
+        const defferedPromise = websocketPromiseCollection[messageId];
+        if (defferedPromise === undefined) throw new Error('this task not existed.');
+        if (wsHelper.isPromiseSuccess(receivedMessage)) {
+          const result = wsHelper.resolvedCallback(receivedMessage);
+          defferedPromise.resolvePromise(result);
+        } else {
+          const reason = wsHelper.rejectCallback(receivedMessage);
+          defferedPromise.rejectPromise(reason);
+        }
+      });
     }
   }
 
@@ -59,6 +91,10 @@ export class BaseClient extends EventEmitter {
     // websocket
 
     protected sokcet: WebSocket | undefined;
+
+    private websocketPromiseCollection: {[key: string]: WebSocketPromise} = { };
+
+    private getCorresponsdMessageId: (sentMessage: string) => string;
 
     addEventListenerForWebSocket<K extends keyof WebSocketEventMap>(type: K, listener: (ev: WebSocketEventMap[K]) => any): void;
 
@@ -91,7 +127,7 @@ export class BaseClient extends EventEmitter {
 
     protected defaultBody: clientBody;
 
-    protected send(clientProperty?: Partial<ClientSendProperty>) {
+    protected async send(clientProperty?: Partial<ClientSendProperty>) {
       const url = clientProperty?.url ? clientProperty?.url : this.defaultUrl;
       const body = clientProperty?.body ? clientProperty?.body : {};
       const mergeMode = clientProperty?.mergeMode ? clientProperty?.mergeMode : 'mergeShadow';
@@ -104,7 +140,6 @@ export class BaseClient extends EventEmitter {
           const oriBodyFromDefaultBody: { [key: string]: string } = typeof this.defaultBody === 'string' ? JSON.parse(this.defaultBody) : this.defaultBody;
           const oriBody: { [key: string]: string } = { ...oriBodyFromRequestInit, ...oriBodyFromDefaultBody };
           const newBody: { [key: string]: string } = typeof body === 'string' ? JSON.parse(body) : body;
-          fetchRequest = { ...this.defaultRequestInit, body: JSON.stringify({ ...oriBody, ...newBody }) };
           websocketMessage = JSON.stringify({ ...oriBody, ...newBody });
           break;
         }
@@ -115,7 +150,21 @@ export class BaseClient extends EventEmitter {
         default:
           throw new Error('undefined type');
       }
-      if (this.sokcet?.readyState !== WebSocket.OPEN) { return fetch(url, fetchRequest); }
-      return this.sokcet.send(websocketMessage);
+      if (this.sokcet?.readyState !== WebSocket.OPEN) {
+        const response = await fetch(url, fetchRequest);
+        return response.json();
+      }
+      this.sokcet.send(websocketMessage);
+      return new Promise((resolve, reject) => {
+        const messageId = this.getCorresponsdMessageId(websocketMessage);
+        this.websocketPromiseCollection[messageId] = {
+          resolvePromise: (para) => {
+            resolve(para);
+          },
+          rejectPromise: (para) => {
+            reject(para);
+          },
+        };
+      });
     }
 }
