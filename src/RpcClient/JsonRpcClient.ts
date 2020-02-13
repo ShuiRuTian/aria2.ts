@@ -52,14 +52,23 @@ interface Aria2RpcMethodFailedResponse extends Aria2RpcMethodBase{
   };
 }
 
+interface Aria2RpcNotificationResponseDataStruct{
+  gid: string;
+}
+
 interface Aria2RpcNotificationResponse{
   jsonrpc: string;
   method: Aria2Notifications;
-  params: {gid: string};
+  params: Aria2RpcNotificationResponseDataStruct;
 }
 
-
 const aria2WebSocketPromiseFunction: WebSocketPromiseResultFunction = {
+  isResponseTreatedAsPromise(message: string) {
+    const messageObject: any = JSON.parse(message);
+    const isSuccessMethodResponse = messageObject.result !== undefined;
+    const isFailedMethodResponse = messageObject.error !== undefined;
+    return isSuccessMethodResponse || isFailedMethodResponse;
+  },
   getIdFromSentMessage(message: string) {
     const messageObject: Aria2RpcMethodBase = JSON.parse(message);
     return messageObject.id;
@@ -98,9 +107,7 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
         params,
       };
       const requestInfo: Partial<ClientSendProperty> = {
-        body: {
-          body: JSON.stringify(mutableBodyObject),
-        },
+        body: JSON.stringify(mutableBodyObject),
       };
       return this.send(requestInfo);
     }
@@ -110,7 +117,22 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
       super(url, aria2WebSocketPromiseFunction, requestInit, body);
     }
 
-    // #methods
+    // #region notification
+
+    // different from methods, the returned value has same struct, so we just only need one method.
+
+    notification(notification: Aria2Notifications, callback: (data: Aria2RpcNotificationResponseDataStruct) => any) {
+      this.addEventListenerForWebSocket('message', ({ data: receivedMessage }) => {
+        const messageObject: Aria2RpcNotificationResponse = JSON.parse(receivedMessage);
+        if (messageObject.method === notification) {
+          const callBackValue = callback(messageObject.params);
+          return callBackValue;
+        }
+      });
+    }
+    // #endregion notification
+
+    // #region methods
     /**
     * This method adds a new download. uris is an array of HTTP/FTP/SFTP/BitTorrent URIs (strings) pointing to the same resource.  If you mix URIs pointing to different resources, then the download may fail or be corrupted without aria2 complaining.  When adding BitTorrent Magnet URIs, uris must have only one element and it should be BitTorrent Magnet URI.  options is a struct and its members are pairs of option name and value.  See Options below for more details.  If position is given, it must be an integer starting from 0. The new download will be inserted at position in the waiting queue. If position is omitted or position is larger than the current size of the queue, the new download is appended to the end of the queue.  This method returns the GID of the newly registered download.
     */

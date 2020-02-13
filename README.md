@@ -104,6 +104,10 @@ Just go to the web, and press F12, copy code and run them in the console. Then y
 However, some modification are still needed.
 these script still need to improved.
 
+## About tests
+No, there is not any real test that you expect. 
+
+For now, I use them manually to check whether function behaves as expected. But I clean the side effects(if any) by myself.
 
 ## thanks
 - Inspired by aria2.js

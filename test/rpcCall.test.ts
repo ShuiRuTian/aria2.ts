@@ -1,3 +1,5 @@
+/* eslint-disable func-names */
+/* eslint-disable prefer-arrow-callback */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 
@@ -23,8 +25,8 @@ describe('JSON-RPC', () => {
   //   });
   // });
 
-  describe('websocket', () => {
-    describe('lowLevel websocket', () => {
+  describe('websocket', function () {
+    it('lowLevel websocket', function () {
       const socket = new WS('ws://localhost:6800/jsonrpc');
       const body = {
         jsonrpc: '2.0', id: 'qwer', method: 'aria2.addUri', params: [['ithub.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' }],
@@ -67,6 +69,11 @@ describe('JSON-RPC', () => {
           console.log('timeout2');
         }, 1000);
       }, 1000);
+    });
+    it('client as websocket return promise', async function () {
+      const client = new JsonRpcClient('ws://localhost:6800/jsonrpc');
+      const res = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
+      console.log(res);
     });
   });
 });

@@ -43,6 +43,7 @@ interface WebSocketEventMap {
 }
 
 export interface WebSocketPromiseResultFunction{
+  isResponseTreatedAsPromise: (message: string) => boolean;
   getIdFromSentMessage: (message: string) => string;
   getIdFromReceivedMessage: (message: string) => string;
   resolvedCallback: (message: string) => any;
@@ -68,7 +69,14 @@ export class BaseClient extends EventEmitter {
     this.getCorresponsdMessageId = wsHelper.getIdFromSentMessage;
     if (this.defaultUrl.protocol.startsWith('ws')) {
       this.sokcet = new WebSocket(this.defaultUrl);
+      this.sokcet.addEventListener('open', () => {
+        while (this.websocketWaitingMessageQueue.length !== 0) {
+          const message = this.websocketWaitingMessageQueue.shift();
+          this.sokcet?.send(message);
+        }
+      });
       this.sokcet.addEventListener('message', ({ data: receivedMessage }) => {
+        if (!wsHelper.isResponseTreatedAsPromise(receivedMessage)) { return; }
         const messageId = wsHelper.getIdFromSentMessage(receivedMessage);
         const { websocketPromiseCollection } = this;
         const defferedPromise = websocketPromiseCollection[messageId];
@@ -92,6 +100,10 @@ export class BaseClient extends EventEmitter {
 
     protected sokcet: WebSocket | undefined;
 
+    // if websocket want to send some message, but the state is connecting, the message will be pushed into this struct. When socket opens, the message would be sent one by one.
+    private websocketWaitingMessageQueue: string[] = [];
+
+    // sent message warpped in Promise waitting to resolve or reject.
     private websocketPromiseCollection: {[key: string]: WebSocketPromise} = { };
 
     private getCorresponsdMessageId: (sentMessage: string) => string;
@@ -150,11 +162,15 @@ export class BaseClient extends EventEmitter {
         default:
           throw new Error('undefined type');
       }
-      if (this.sokcet?.readyState !== WebSocket.OPEN) {
+      if (this.sokcet === undefined) {
         const response = await fetch(url, fetchRequest);
         return response.json();
       }
-      this.sokcet.send(websocketMessage);
+      if (this.sokcet.readyState !== WebSocket.OPEN) {
+        this.websocketWaitingMessageQueue.push(websocketMessage);
+      } else {
+        this.sokcet.send(websocketMessage);
+      }
       return new Promise((resolve, reject) => {
         const messageId = this.getCorresponsdMessageId(websocketMessage);
         this.websocketPromiseCollection[messageId] = {
