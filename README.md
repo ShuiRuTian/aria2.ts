@@ -110,7 +110,7 @@ No, there is not any real test that you expect.
 For now, I use them manually to check whether function behaves as expected. But I clean the side effects(if any) by myself.
 
 ## thanks
-- Inspired by aria2.js
+- Inspired by [aria2.js](https://aria2.github.io/)
 - use download code from @electron/get
 
 
