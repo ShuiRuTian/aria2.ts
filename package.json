@@ -1,7 +1,8 @@
 {
-  "name": "typescipt-boilerplate",
+  "name": "aria2ts",
   "version": "1.0.0",
-  "description": "aria2 helper for js",
+  "description": "aria2 helper for js. You could use JSON RPC to communicate eaily with aria2. You could download aria2 easily according to your os.",
+  "homepage": "https://github.com/ShuiRuTian/aria2.ts",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "dependencies": {
