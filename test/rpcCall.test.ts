@@ -75,5 +75,51 @@ describe('JSON-RPC', () => {
       const res = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
       console.log(res);
     });
+    it('client as websocket recontinue by gid and use notification', async function () {
+      const client = new JsonRpcClient('ws://localhost:6800/jsonrpc');
+      client.notification('aria2.onDownloadStart', (res) => {
+        console.log('start');
+        console.log(res.gid);
+      });
+      client.notification('aria2.onDownloadPause', (res) => {
+        console.log('pause');
+        console.log(res.gid);
+      });
+      client.notification('aria2.onDownloadStop', (res) => {
+        console.log('stop');
+        console.log(res.gid);
+      });
+      const res = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
+      console.log(res);
+      const res1 = await client.pause(res);
+      const res2 = await client.unpause(res1);
+      setTimeout(() => {
+        console.log('timeout2');
+      }, 10000);
+    });
+
+    it('client as websocket recontinue by all and use notification', async function () {
+      const client = new JsonRpcClient('ws://localhost:6800/jsonrpc');
+      client.notification('aria2.onDownloadStart', (res) => {
+        console.log('start');
+        console.log(res.gid);
+      });
+      client.notification('aria2.onDownloadPause', (res) => {
+        console.log('pause');
+        console.log(res.gid);
+      });
+      client.notification('aria2.onDownloadStop', (res) => {
+        console.log('stop');
+        console.log(res.gid);
+      });
+      const res1 = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
+      const res2 = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
+
+      const ok1 = await client.pauseAll();
+      const ok2 = await client.unpauseAll();
+      setTimeout(() => {
+        console.log('timeout3');
+      }, 10000);
+    });
   });
 });

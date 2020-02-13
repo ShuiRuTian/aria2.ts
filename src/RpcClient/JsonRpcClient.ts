@@ -59,7 +59,8 @@ interface Aria2RpcNotificationResponseDataStruct{
 interface Aria2RpcNotificationResponse{
   jsonrpc: string;
   method: Aria2Notifications;
-  params: Aria2RpcNotificationResponseDataStruct;
+  // the length of array would only be one.
+  params: Aria2RpcNotificationResponseDataStruct[];
 }
 
 const aria2WebSocketPromiseFunction: WebSocketPromiseResultFunction = {
@@ -125,7 +126,8 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
       this.addEventListenerForWebSocket('message', ({ data: receivedMessage }) => {
         const messageObject: Aria2RpcNotificationResponse = JSON.parse(receivedMessage);
         if (messageObject.method === notification) {
-          const callBackValue = callback(messageObject.params);
+          const [notificationGid] = messageObject.params;
+          const callBackValue = callback(notificationGid);
           return callBackValue;
         }
       });

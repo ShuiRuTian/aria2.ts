@@ -1,9 +1,14 @@
 # Aria2.ts
 rich function helper to use aria2 in js
 
+## other way to use aria2 in js
+- [aria2.js](https://aria2.github.io/) : another js lib
+- through shell: you can use shell.js or node directly to use aria2 directly.
+
 ## Need to do
 
-[] websocket supported
+[x] notification event response.
+[x] websocket supported
     - what should we do to switch http and websocket? Through one method or change url directly? 
 
 [] returned type
@@ -12,7 +17,7 @@ rich function helper to use aria2 in js
 
 [] Options in methods might not be all, some options could not be used.
 
-[] notification event response.
+
 
 ## Functions
 - install aria2 according to your platform.
