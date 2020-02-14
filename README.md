@@ -17,8 +17,6 @@ rich function helper to use aria2 in js
 
 [] Options in methods might not be all, some options could not be used.
 
-
-
 ## Functions
 - install aria2 according to your platform.
 - ability to use JSON-RPC with running aria2 easily
@@ -96,6 +94,29 @@ await res = tmpClient.addUri(['https://github.com/aria2/aria2/releases/download/
 - or you might want to use something like follows, and , and allparameters do not have types.
 ``` typescript
 tmpClient.send("addUri", [XX], YY)
+```
+
+#### Aria2 Rpc Webscoket event and Notifications
+
+##### webscoket event
+websocket could add event listener : 'close', 'error', 'message', 'open'.
+> thanks to typescript, you could only input these types, and there would be intellisense
+You could add them by following code:
+``` ts
+  client.addEventListenerForWebSocket('message', ({ data }) => {
+    console.log(data);
+  });
+```
+#### Notification
+Aria2 provides some notifications: 'aria2.onDownloadStart','aria2.onDownloadPause','aria2.onDownloadStop','aria2.onDownloadComplete','aria2.onDownloadError','aria2.onBtDownloadComplete'.
+> thanks to typescript, you could only input these types, and there would be intellisense
+> In low level, these are some specail case for 'message' event.
+you could add them by following code:
+``` ts
+  client.notification('aria2.onDownloadStop', (res) => {
+    console.log('stop');
+    console.log(res.gid);
+  });
 ```
 
 ## some scripts to produce JSONRPC methods and Options 
