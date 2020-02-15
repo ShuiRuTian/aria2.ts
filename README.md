@@ -1,13 +1,47 @@
 # Aria2.ts
-rich function helper to use aria2 in js
+TavaScript library for aria2.
 
-## other way to use aria2 in js
-- [aria2.js](https://aria2.github.io/) : another js lib
-- through shell: you can use shell.js or node directly to use aria2 directly.
+- [aria2.ts](#Aria2.ts)
+  - [motivation](#motivation)
+  - [Need to do](#need-to-do)
+  - [Introduction](#introduction)
+  - [Getting started](#getting-started)
+  - [Usage](#usage)
+    - [aria2](#Aria2)
+      - [How to resume download](#How-to-resume-download)
+    - [Rpc](#Rpc)
+      - [Create Client](#Create-client)
+      - [Aria2 Rpc Methods](#Aria2-Rpc-Methods)
+      - [Webscoket event and Notifications](#Webscoket-event-and-Notifications)
+  - [Contribution](#Contribution)
+    - [produce JSONRPC methods and Options](#produce-JSONRPC-methods-and-Options)
+    - [About tests](#About-tests)
+    - [websocket event to promise](#websocket-event-to-promise)
+
+  - [thanks](#thanks)
+
+## motivation
+Although there have been some lib or implement for aria2 in javascript and typescript.
+For lib, there are :
+- [aria2.js](https://github.com/sonnyp/aria2.js/)
+- [aria2c](https://github.com/song940/aria2c)
+
+For other implement, often they are electron or web wrapper of aria2:
+- [electron-aria2](https://jack9966qk.github.io/electron-aria2/) 
+- [aria2ui](https://github.com/znetstar/aria2ui) 
+
+aria2.js should be the best in them. It provide a general method `call` and some specificed methods. 
+
+However, there are still some flaws:
+- aria2 provides about 36 methods, but aria2.js only have 4 in them.
+- No type check and intellisense. When I use `call`, I have no idea about any method provided by aria2 and I could input any string rather than defined by aria2, such as `aria2.call("addUri123", [magnet], { dir: "/tmp" });`, only when running I could know the issue.
+- No comment for methods, I have to check the offical docuemnt to know how to use them. OK, this is not an issue, just little annoying.
+
 
 ## Need to do
 
 [x] notification event response.
+
 [x] websocket supported
     - what should we do to switch http and websocket? Through one method or change url directly? 
 
@@ -17,7 +51,7 @@ rich function helper to use aria2 in js
 
 [] Options in methods might not be all, some options could not be used.
 
-## Functions
+## Introduction
 - install aria2 according to your platform.
 - ability to use JSON-RPC with running aria2 easily
 
@@ -71,42 +105,44 @@ await res = tmpClient.unpause(gid);
 
 ### Rpc
 
-#### Basic
+#### Create client
 
-create client
+1. default url
+2. http url
+3. websocket url
 
 ``` typescript
 // dedault endpoint is http://localhost:6800/jsonrpc
-var tmpClient = new JsonRpcClient();
+var defaultClient = new JsonRpcClient();
+var httpClient = new JsonRpcClient('http://localhost:6800/jsonrpc');
+var websocketClient = new JsonRpcClient('ws://localhost:6800/jsonrpc');
 ```
+
+secure is not supported for temp.
 
 ##### Aria2 Rpc Methods
 
 There are total 36 methods in aria2 rpc methods, such as `aria2.addUri`, `aria2.getOption`, `system.listMethods`. 
 
-when you want to call these methods, you might have two wanys(only one is supported for now):
-- omit the prefix, and call through client directly, all parameters have types. For example:
+You can learn more on [Aria2 document](https://aria2.github.io/manual/en/html/aria2c.html?highlight=json#methods). The parameter type imitates the document.
+
+Just call through client directly, all parameters(but not response, for now) have types. For example:
 
 ``` typescript
 await res = tmpClient.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' }, 2)
 ```
 
-- or you might want to use something like follows, and , and allparameters do not have types.
-``` typescript
-tmpClient.send("addUri", [XX], YY)
-```
-
-#### Aria2 Rpc Webscoket event and Notifications
-
-##### webscoket event
+##### Webscoket event
 websocket could add event listener : 'close', 'error', 'message', 'open'.
 > thanks to typescript, you could only input these types, and there would be intellisense
 You could add them by following code:
+
 ``` ts
   client.addEventListenerForWebSocket('message', ({ data }) => {
     console.log(data);
   });
 ```
+
 #### Notification
 Aria2 provides some notifications: 'aria2.onDownloadStart','aria2.onDownloadPause','aria2.onDownloadStop','aria2.onDownloadComplete','aria2.onDownloadError','aria2.onBtDownloadComplete'.
 > thanks to typescript, you could only input these types, and there would be intellisense
@@ -119,7 +155,9 @@ you could add them by following code:
   });
 ```
 
-## some scripts to produce JSONRPC methods and Options 
+## Contribution
+
+### produce JSONRPC methods and Options 
 Almost all comments are from aria2 offical site, and I use two scripts to produce code.
 
 1. produce Options -- produce options.js
@@ -130,17 +168,11 @@ Just go to the web, and press F12, copy code and run them in the console. Then y
 However, some modification are still needed.
 these script still need to improved.
 
-## About tests
+### About tests
 No, there is not any real test that you expect. 
 
 For now, I use them manually to check whether function behaves as expected. But I clean the side effects(if any) by myself.
 
-## thanks
-- Inspired by [aria2.js](https://aria2.github.io/)
-- use download code from @electron/get
-
-
-## Some tips
 ### websocket event to promise
 To hide low level, we wish to use like follows, no matter client is ws or fetch or something else.
 ``` ts
@@ -180,3 +212,7 @@ function send(message){
   });
 }
 ```
+
+## thanks
+- Inspired by [aria2.js](https://aria2.github.io/)
+- use download code from @electron/get

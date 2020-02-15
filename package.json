@@ -49,7 +49,9 @@
   },
   "keywords": [
     "typescript",
+    "javascript",
     "aria2",
+    "aria2c",
     "download",
     "BitTorrent",
     "HTTP",
