@@ -2,9 +2,9 @@
 TavaScript library for aria2.
 
 - [aria2.ts](#Aria2.ts)
-  - [motivation](#motivation)
+  - [Motivation](#motivation)
   - [Need to do](#need-to-do)
-  - [Introduction](#introduction)
+  - [Introduction](#introMduction)
   - [Getting started](#getting-started)
   - [Usage](#usage)
     - [aria2](#Aria2)
@@ -25,18 +25,19 @@ Although there have been some lib or implement for aria2 in javascript and types
 For lib, there are :
 - [aria2.js](https://github.com/sonnyp/aria2.js/)
 - [aria2c](https://github.com/song940/aria2c)
+- [aria2rpc](https://github.com/pboymt/aria2rpc)
 
 For other implement, often they are electron or web wrapper of aria2:
 - [electron-aria2](https://jack9966qk.github.io/electron-aria2/) 
 - [aria2ui](https://github.com/znetstar/aria2ui) 
+- [ariaNg](https://github.com/mayswind/AriaNg)
 
-aria2.js should be the best in them. It provide a general method `call` and some specificed methods. 
+aria2.js might be the best in libs. It provide a general method `call` and some specificed methods. 
 
 However, there are still some flaws:
 - aria2 provides about 36 methods, but aria2.js only have 4 in them.
 - No type check and intellisense. When I use `call`, I have no idea about any method provided by aria2 and I could input any string rather than defined by aria2, such as `aria2.call("addUri123", [magnet], { dir: "/tmp" });`, only when running I could know the issue.
 - No comment for methods, I have to check the offical docuemnt to know how to use them. OK, this is not an issue, just little annoying.
-
 
 ## Need to do
 

@@ -56,11 +56,16 @@ interface Aria2RpcNotificationResponseDataStruct{
   gid: string;
 }
 
+// The response of notification data will only have one object in its array.
+interface Aria2RpcNotificationResponseDataArray extends Array<Aria2RpcNotificationResponseDataStruct>{
+  length: 1;
+}
+
 interface Aria2RpcNotificationResponse{
   jsonrpc: string;
   method: Aria2Notifications;
   // the length of array would only be one.
-  params: Aria2RpcNotificationResponseDataStruct[];
+  params: Aria2RpcNotificationResponseDataArray;
 }
 
 const aria2WebSocketPromiseFunction: WebSocketPromiseResultFunction = {
