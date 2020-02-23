@@ -42,7 +42,7 @@ interface WebSocketEventMap {
   'open': Event;
 }
 
-export interface WebSocketPromiseResultFunction{
+export interface PromiseResultFunction{
   isResponseTreatedAsPromise: (message: string) => boolean;
   getIdFromSentMessage: (message: string) => string;
   getIdFromReceivedMessage: (message: string) => string;
@@ -59,14 +59,17 @@ export interface WebSocketPromiseResultFunction{
  *
  * transfer websocket from listener to promise.
  */
-
-export class BaseClient extends EventEmitter {
-  constructor(url: URL | string, wsHelper: WebSocketPromiseResultFunction, requestInit: RequestInit = {}, body: clientBody = {}) {
-    super();
+export class BaseClient // extends EventEmitter
+// eslint-disable-next-line brace-style
+{
+  constructor(url: URL | string, promiseHelper: PromiseResultFunction, requestInit: RequestInit = {}, body: clientBody = {}) {
+    // super();
     if (typeof url === 'string') { this.defaultUrl = new URL(url); } else { this.defaultUrl = url; }
     this.defaultRequestInit = requestInit;
     this.defaultBody = body;
-    this.getCorresponsdMessageId = wsHelper.getIdFromSentMessage;
+    this.getCorresponsdMessageId = promiseHelper.getIdFromSentMessage;
+    // eslint-disable-next-line no-underscore-dangle
+    this._promiseHelper = promiseHelper;
     if (this.defaultUrl.protocol.startsWith('ws')) {
       this.sokcet = new WebSocket(this.defaultUrl);
       this.sokcet.addEventListener('open', () => {
@@ -76,16 +79,16 @@ export class BaseClient extends EventEmitter {
         }
       });
       this.sokcet.addEventListener('message', ({ data: receivedMessage }) => {
-        if (!wsHelper.isResponseTreatedAsPromise(receivedMessage)) { return; }
-        const messageId = wsHelper.getIdFromSentMessage(receivedMessage);
+        if (!promiseHelper.isResponseTreatedAsPromise(receivedMessage)) { return; }
+        const messageId = promiseHelper.getIdFromSentMessage(receivedMessage);
         const { websocketPromiseCollection } = this;
         const defferedPromise = websocketPromiseCollection[messageId];
         if (defferedPromise === undefined) throw new Error('this task not existed.');
-        if (wsHelper.isPromiseSuccess(receivedMessage)) {
-          const result = wsHelper.resolvedCallback(receivedMessage);
+        if (promiseHelper.isPromiseSuccess(receivedMessage)) {
+          const result = promiseHelper.resolvedCallback(receivedMessage);
           defferedPromise.resolvePromise(result);
         } else {
-          const reason = wsHelper.rejectCallback(receivedMessage);
+          const reason = promiseHelper.rejectCallback(receivedMessage);
           defferedPromise.rejectPromise(reason);
         }
       });
@@ -137,6 +140,10 @@ export class BaseClient extends EventEmitter {
     // for now, if user change url, websocket could not change, user has to create a new one.
     defaultUrl: URL;
 
+    // this would only be used to deal with fetch result to have similar behaviour as websocket to produce same return.
+    // this might no be right in concept: we could do this because aria2 return websocket and http request in the same structure, but this should not expose to this layer.
+    private _promiseHelper: PromiseResultFunction
+
     protected defaultBody: clientBody;
 
     protected async send(clientProperty?: Partial<ClientSendProperty>) {
@@ -144,7 +151,7 @@ export class BaseClient extends EventEmitter {
       const body = clientProperty?.body ? clientProperty?.body : {};
       const mergeMode = clientProperty?.mergeMode ? clientProperty?.mergeMode : 'mergeShadow';
       let fetchRequest: RequestInit|undefined;
-      let websocketMessage = '';
+      let messageBody = '';
       switch (mergeMode) {
         case 'mergeShadow':
         {
@@ -152,7 +159,8 @@ export class BaseClient extends EventEmitter {
           const oriBodyFromDefaultBody: { [key: string]: string } = typeof this.defaultBody === 'string' ? JSON.parse(this.defaultBody) : this.defaultBody;
           const oriBody: { [key: string]: string } = { ...oriBodyFromRequestInit, ...oriBodyFromDefaultBody };
           const newBody: { [key: string]: string } = typeof body === 'string' ? JSON.parse(body) : body;
-          websocketMessage = JSON.stringify({ ...oriBody, ...newBody });
+          messageBody = JSON.stringify({ ...oriBody, ...newBody });
+          fetchRequest = { ...this.defaultRequestInit, body: messageBody };
           break;
         }
         case 'override':
@@ -164,15 +172,29 @@ export class BaseClient extends EventEmitter {
       }
       if (this.sokcet === undefined) {
         const response = await fetch(url, fetchRequest);
-        return response.json();
+        const receivedMessage = await response.text();
+        // do something similar to websocket response, to have the same behaviour.
+        // eslint-disable-next-line no-underscore-dangle
+        const promiseHelper = this._promiseHelper;
+        return new Promise((resolve, reject) => {
+          if (!promiseHelper.isResponseTreatedAsPromise(receivedMessage)) { return; }
+          const messageId = promiseHelper.getIdFromSentMessage(receivedMessage);
+          if (promiseHelper.isPromiseSuccess(receivedMessage)) {
+            const result = promiseHelper.resolvedCallback(receivedMessage);
+            resolve(result);
+          } else {
+            const reason = promiseHelper.rejectCallback(receivedMessage);
+            reject(reason);
+          }
+        });
       }
       if (this.sokcet.readyState !== WebSocket.OPEN) {
-        this.websocketWaitingMessageQueue.push(websocketMessage);
+        this.websocketWaitingMessageQueue.push(messageBody);
       } else {
-        this.sokcet.send(websocketMessage);
+        this.sokcet.send(messageBody);
       }
       return new Promise((resolve, reject) => {
-        const messageId = this.getCorresponsdMessageId(websocketMessage);
+        const messageId = this.getCorresponsdMessageId(messageBody);
         this.websocketPromiseCollection[messageId] = {
           resolvePromise: (para) => {
             resolve(para);

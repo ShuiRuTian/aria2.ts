@@ -46,7 +46,8 @@ However, there are still some flaws:
 [x] websocket supported
     - what should we do to switch http and websocket? Through one method or change url directly? 
 
-[] returned type
+[x] returned type
+    - However, options parameter might not be right
 
 [] encrypt RPC traffic with SSL/TLS supported
 

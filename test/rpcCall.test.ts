@@ -12,24 +12,21 @@ import JsonRpcClient from '..';
 //   // TODO: how to judge there is an aria2 running? how to get its information?
 //   const aria2 = new Aria2();
 // });
+const downloadLink1 = 'https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip';
 
 describe('JSON-RPC', () => {
-  // describe('http', async () => {
-  //   const client = new JsonRpcClient();
-  //   const res = await client.listMethods();
-  //   const jsonMessage = await res.json();
-  //   console.log(jsonMessage);
-  //   expect(Array.isArray(jsonMessage)).to.be.true;
-  //   jsonMessage.forEach((element: any) => {
-  //     expect(element).to.be.a('string');
-  //   });
-  // });
+  it('http', async () => {
+    const client = new JsonRpcClient();
+    const res = await client.addUri([downloadLink1]);
+    console.log(res);
+    console.log(res);
+  });
 
   describe('websocket', function () {
     it('lowLevel websocket', function () {
       const socket = new WS('ws://localhost:6800/jsonrpc');
       const body = {
-        jsonrpc: '2.0', id: 'qwer', method: 'aria2.addUri', params: [['ithub.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' }],
+        jsonrpc: '2.0', id: 'qwer', method: 'aria2.addUri', params: [[downloadLink1], { dir: './' }],
       };
       socket.addEventListener('open', ({ target }) => {
         console.log('open');
@@ -72,7 +69,7 @@ describe('JSON-RPC', () => {
     });
     it('client as websocket return promise', async function () {
       const client = new JsonRpcClient('ws://localhost:6800/jsonrpc');
-      const res = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
+      const res = await client.addUri([downloadLink1], { dir: './' });
       console.log(res);
     });
     it('client as websocket recontinue by gid and use notification', async function () {
@@ -89,7 +86,7 @@ describe('JSON-RPC', () => {
         console.log('stop');
         console.log(res.gid);
       });
-      const res = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
+      const res = await client.addUri([downloadLink1], { dir: './' });
       console.log(res);
       const res1 = await client.pause(res);
       const res2 = await client.unpause(res1);
@@ -112,8 +109,8 @@ describe('JSON-RPC', () => {
         console.log('stop');
         console.log(res.gid);
       });
-      const res1 = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
-      const res2 = await client.addUri(['https://github.com/aria2/aria2/releases/download/release-1.35.0/aria2-1.35.0-aarch64-linux-android-build1.zip'], { dir: './' });
+      const res1 = await client.addUri([downloadLink1], { dir: './' });
+      const res2 = await client.addUri([downloadLink1], { dir: './' });
 
       const ok1 = await client.pauseAll();
       const ok2 = await client.unpauseAll();
