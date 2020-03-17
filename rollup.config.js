@@ -11,11 +11,13 @@ export default {
     output: [
         {
           file: 'lib/cjs/index.js',
-          format: 'cjs'
+          format: 'cjs',
+          sourcemap: true
         },
         {
           file: 'lib/esm/index.js',
-          format: 'es'
+          format: 'es',
+          sourcemap: true
         }
       ]
 }
