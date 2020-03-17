@@ -1,14 +1,14 @@
 {
   "name": "aria2ts",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "TavaScript library for aria2. You could use JSON RPC to communicate eaily with aria2. You could download aria2 easily according to your os.",
   "homepage": "https://github.com/ShuiRuTian/aria2.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ShuiRuTian/aria2.ts"
   },
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
   "files": ["lib"],
   "dependencies": {
     "compressing": "^1.5.0",
