@@ -35,6 +35,7 @@
                 "devDependencies": true
             }
         ],
+        "import/prefer-default-export":"off",
         "import/extensions":0,
         "no-console": "off",
         "max-len":"off"

@@ -7,16 +7,16 @@ import { URL } from 'url';
 import {
   BaseClient, clientBody, ClientSendProperty, PromiseResultFunction,
 } from './BaseClient';
-import { AllOption } from '../Options/AllOptions';
-import { DownloadStatus } from './ResponseTypes/DownloadStatus';
-import { ResponseGetUris } from './ResponseTypes/ResponseGetUris';
-import { ResponseGetFiles } from './ResponseTypes/ResponseGetFiles';
-import { ResponseGetPeers } from './ResponseTypes/ResponseGetPeers';
-import { ResponseGetServers } from './ResponseTypes/ResponseGetServers';
-import { ResponseChangeUri } from './ResponseTypes/ResponseChangeUri';
-import { ResponseGetGlobalStat } from './ResponseTypes/ResponseGetGlobalStat';
-import { ResponseGetVersion } from './ResponseTypes/ResponseGetVersion';
-import { ResponseGetSessionInfo } from './ResponseTypes/ResponseGetSessionInfo';
+import type{ AllOption } from '../Options/AllOptions';
+import type{ DownloadStatus } from './ResponseTypes/DownloadStatus';
+import type{ ResponseGetUris } from './ResponseTypes/ResponseGetUris';
+import type{ ResponseGetFiles } from './ResponseTypes/ResponseGetFiles';
+import type{ ResponseGetPeers } from './ResponseTypes/ResponseGetPeers';
+import type{ ResponseGetServers } from './ResponseTypes/ResponseGetServers';
+import type{ ResponseChangeUri } from './ResponseTypes/ResponseChangeUri';
+import type { ResponseGetGlobalStat } from './ResponseTypes/ResponseGetGlobalStat';
+import type{ ResponseGetVersion } from './ResponseTypes/ResponseGetVersion';
+import type{ ResponseGetSessionInfo } from './ResponseTypes/ResponseGetSessionInfo';
 
 const JsonRpcDefaultUrl = 'http://localhost:6800/jsonrpc';
 

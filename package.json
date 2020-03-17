@@ -1,6 +1,6 @@
 {
   "name": "aria2ts",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "TavaScript library for aria2. You could use JSON RPC to communicate eaily with aria2. You could download aria2 easily according to your os.",
   "homepage": "https://github.com/ShuiRuTian/aria2.ts",
   "repository": {
@@ -12,21 +12,21 @@
   "dependencies": {
     "compressing": "^1.5.0",
     "fs-extra": "^8.1.0",
-    "got": "^10.5.5",
+    "got": "^10.6.0",
     "node-fetch": "^2.6.0",
     "shelljs": "^0.8.3",
     "ws": "^7.2.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.9",
-    "@types/fs-extra": "^8.0.1",
+    "@types/fs-extra": "^8.1.0",
     "@types/mocha": "^7.0.0",
-    "@types/node": "^13.7.1",
+    "@types/node": "^13.7.4",
     "@types/node-fetch": "^2.5.4",
     "@types/shelljs": "^0.8.6",
     "@types/ws": "^7.2.1",
-    "@typescript-eslint/eslint-plugin": "^2.19.2",
-    "@typescript-eslint/parser": "^2.19.2",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
     "chai": "^4.2.0",
     "cross-env": "^7.0.0",
     "eslint": "^6.8.0",
@@ -36,14 +36,18 @@
     "husky": "^4.0.0",
     "lint-staged": "^10.0.0",
     "mocha": "^7.0.1",
+    "rollup": "^2.0.6",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-typescript2": "^0.26.0",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && tsc -p tsconfig.esm.json",
+    "build": "rollup --config",
+    "build:tsc": "tsc && tsc -p tsconfig.esm.json",
     "prepublishOnly": "npm run build",
     "lint-staged:debug": "lint-staged --debug"
   },
