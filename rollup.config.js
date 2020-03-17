@@ -10,11 +10,11 @@ export default {
 
     output: [
         {
-          file: 'dist/cjs/index.js',
+          file: 'lib/cjs/index.js',
           format: 'cjs'
         },
         {
-          file: 'dist/esm/index.js',
+          file: 'lib/esm/index.js',
           format: 'es'
         }
       ]
