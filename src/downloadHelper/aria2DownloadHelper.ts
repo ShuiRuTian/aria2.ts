@@ -5,16 +5,7 @@ import { zip } from 'compressing';
 
 import download from './downloader';
 
-type Platform = 'aix'
-| 'android'
-| 'darwin'
-| 'freebsd'
-| 'linux'
-| 'openbsd'
-| 'sunos'
-| 'win32'
-| 'cygwin'
-| 'netbsd';
+type Platform = typeof process.platform;
 
 type SupportPlatform = 'linux'|'win32';
 
@@ -48,7 +39,7 @@ function getCompressedFileName(platform: SupportPlatform): string {
 }
 
 // eslint-disable-next-line class-methods-use-this
-function getAria2BinName(platform: SupportPlatform): string {
+export function getAria2BinName(platform: SupportPlatform): string {
   switch (platform) {
     case 'linux':
       return 'aria2c';
