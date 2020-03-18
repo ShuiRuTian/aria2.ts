@@ -13,6 +13,8 @@
     "lib"
   ],
   "dependencies": {
+    "@types/node-fetch": "^2.5.4",
+    "@types/ws": "^7.2.1",
     "compressing": "^1.5.0",
     "fs-extra": "^8.1.0",
     "got": "^10.6.0",
@@ -25,9 +27,7 @@
     "@types/fs-extra": "^8.1.0",
     "@types/mocha": "^7.0.0",
     "@types/node": "^13.7.4",
-    "@types/node-fetch": "^2.5.4",
     "@types/shelljs": "^0.8.6",
-    "@types/ws": "^7.2.1",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
     "chai": "^4.2.0",
