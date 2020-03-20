@@ -270,21 +270,21 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
     /**
   * This method returns a list of active downloads.  The response is an array of the same structs as returned by the aria2.tellStatus() method. For the keys parameter, please refer to the aria2.tellStatus() method.
   */
-    tellActive(keys?: Array<keyof DownloadStatus>): Promise<DownloadStatus> {
+    tellActive(keys?: Array<keyof DownloadStatus>): Promise<DownloadStatus[]> {
       return this.methodSend('aria2.tellActive', Array.from(arguments));
     }
 
     /**
   * This method returns a list of waiting downloads, including paused ones. offset is an integer and specifies the offset from the download waiting at the front. num is an integer and specifies the max. number of downloads to be returned. For the keys parameter, please refer to the aria2.tellStatus() method.
   */
-    tellWaiting(offset: number, num: number, keys?: Array<keyof DownloadStatus>): Promise<DownloadStatus> {
+    tellWaiting(offset: number, num: number, keys?: Array<keyof DownloadStatus>): Promise<DownloadStatus[]> {
       return this.methodSend('aria2.tellWaiting', Array.from(arguments));
     }
 
     /**
   * This method returns a list of stopped downloads. offset is an integer and specifies the offset from the least recently stopped download. num is an integer and specifies the max. number of downloads to be returned. For the keys parameter, please refer to the aria2.tellStatus() method.
   */
-    tellStopped(offset: number, num: number, keys?: Array<keyof DownloadStatus>): Promise<DownloadStatus> {
+    tellStopped(offset: number, num: number, keys?: Array<keyof DownloadStatus>): Promise<DownloadStatus[]> {
       return this.methodSend('aria2.tellStopped', Array.from(arguments));
     }
 

@@ -56,9 +56,9 @@ nameReturnType={
     'getFiles' :"ResponseGetFiles",
     'getPeers' :"ResponseGetPeers",
     'getServers' :"ResponseGetServers",
-    'tellActive' :"DownloadStatus",
-    'tellWaiting' :"DownloadStatus",
-    'tellStopped' :"DownloadStatus",
+    'tellActive' :"DownloadStatus[]",
+    'tellWaiting' :"DownloadStatus[]",
+    'tellStopped' :"DownloadStatus[]",
     'changePosition' :"number",
     'changeUri' :"ResponseChangeUri",
     'getOption' :"AllOption",
@@ -88,10 +88,10 @@ FunctionTrees.forEach((FunctionTree) => {
     methodInformation.push("/**");
     methodInformation.push("* " + description);
     methodInformation.push("*/");
-    
+
     const classMethodName =methodName.split('.').pop();
     methodInformation.push(classMethodName + "(" + namePara[classMethodName] +"): Promise<"+nameReturnType[classMethodName]+">{");
-    
+
     methodInformation.push(`return this.methodSend("${methodName}", Array.from(arguments));`);
     methodInformation.push("}");
 
@@ -114,7 +114,7 @@ console.log(methodArray.join("\n"));
     //     classInformation.push("/**");
     //     classInformation.push("* "+optionValue);
     //     classInformation.push("*");
-    //     optionCommentArray.forEach((comment)=>{        
+    //     optionCommentArray.forEach((comment)=>{
     //         classInformation.push("* "+comment);
     //     });
     //     classInformation.push("*/");
@@ -124,4 +124,3 @@ console.log(methodArray.join("\n"));
 
 
 
-    
