@@ -111,11 +111,13 @@ export class BaseClient // extends EventEmitter
 
     private getCorresponsdMessageId: (sentMessage: string) => string;
 
-    addEventListenerForWebSocket<K extends keyof WebSocketEventMap>(type: K, listener: (ev: WebSocketEventMap[K]) => any): void;
+    // return unsubscriber.
+    addEventListenerForWebSocket<K extends keyof WebSocketEventMap>(type: K, listener: (ev: WebSocketEventMap[K]) => any): () => void;
 
-    addEventListenerForWebSocket(type: string, listener: EventListenerOrEventListenerObject): void;
+    // return unsubscriber.
+    addEventListenerForWebSocket(type: string, listener: EventListenerOrEventListenerObject): () => void;
 
-    addEventListenerForWebSocket(type: string, listener: any): void {
+    addEventListenerForWebSocket(type: string, listener: any): () => void {
       // maybe we could record event linstener use current instance, so reconnect the websocket we could copy to the new one?
       if (this.sokcet === undefined) throw new Error('Please use websocket protocal to create client.');
       switch (type) {
@@ -134,6 +136,9 @@ export class BaseClient // extends EventEmitter
         default:
           this.sokcet.addEventListener(type, listener);
       }
+      return () => {
+        this.sokcet?.removeEventListener(type, listener);
+      };
     }
 
     // general

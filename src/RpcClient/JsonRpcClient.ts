@@ -138,11 +138,11 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
     // #region notification
 
     // different from methods, the returned value has same struct, so we just only need one method.
-
+    // return unsubscribe function.
     notification(notification: Aria2Notifications, callback: (data: Aria2RpcNotificationResponseDataStruct) => any) {
       // this code only deal with specific condition
       // eslint-disable-next-line consistent-return
-      this.addEventListenerForWebSocket('message', ({ data: receivedMessage }) => {
+      return this.addEventListenerForWebSocket('message', ({ data: receivedMessage }) => {
         const messageObject: Aria2RpcNotificationResponse = JSON.parse(receivedMessage);
         if (messageObject.method === notification) {
           const [notificationGid] = messageObject.params;
