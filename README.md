@@ -1,3 +1,5 @@
+# Thanks to user, feel free to open issues!
+
 # Aria2.ts
 TavaScript library for aria2.
 
