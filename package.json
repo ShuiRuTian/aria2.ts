@@ -42,8 +42,8 @@
     "rollup": "^2.0.6",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-typescript2": "^0.26.0",
-    "source-map-loader": "^0.2.4",
-    "ts-loader": "^6.2.1",
+    "source-map-loader": "^4.0.1",
+    "ts-loader": "^9.4.2",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.2"
   },
