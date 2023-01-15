@@ -1,4 +1,7 @@
-# Thanks to user, feel free to open issues!
+# Deprecated
+This repo is moved to https://github.com/ShuiRuTian/recitativo
+
+I think no one is really using this lib, so I move it as part of that repo for better developing experience :-/
 
 # Aria2.ts
 TavaScript library for aria2.
