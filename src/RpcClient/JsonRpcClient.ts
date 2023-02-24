@@ -112,6 +112,7 @@ const aria2WebSocketPromiseFunction: PromiseResultFunction = {
 
 export default class JsonRpcClient extends BaseClient implements Record<JsonRpcClientMehods, Aria2RpcMethod> {
     private Index = 0;
+    private secret = '';
 
     id() {
       this.Index += 1;
@@ -119,6 +120,9 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
     }
 
     private methodSend(methodName: METHODS, params: any[]): Promise<any> {
+      if (this.secret) {
+        params.push(`token:${this.secret}`);
+      }
       const mutableBodyObject = {
         method: methodName,
         id: this.id(),
@@ -133,6 +137,10 @@ export default class JsonRpcClient extends BaseClient implements Record<JsonRpcC
     // to translate the result of websocket to Promise, some things must be known: 1. when to mark result as Resolved and rejected? 2. to resolve 1, the message sent and received must have information to know each other
     constructor(url: URL | string = JsonRpcDefaultUrl, requestInit: RequestInit = JsonRpcDefaultHttpRequestInit, body: clientBody = JsonRpcDefaultBody) {
       super(url, aria2WebSocketPromiseFunction, requestInit, body);
+    }
+
+    public setSecret(secret: string) {
+      this.secret = secret;
     }
 
     // #region notification
